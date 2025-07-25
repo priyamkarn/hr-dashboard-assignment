@@ -17,6 +17,9 @@ async function getUsers(count = 20) {
     age: u.dob.age,
     department: getRandomDepartment(),
     rating: getRandomRating(),
+    phone: u.phone,
+    address: `${u.location.street.number}, ${u.location.city}`,
+    bio: "A passionate employee focused on delivering impactful results.",
   }));
 }
 

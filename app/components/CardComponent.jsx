@@ -1,10 +1,8 @@
-import React from 'react';
+"use client";
+import React from "react";
+import Link from "next/link";
 
-const getStars = (rating) => {
-  const fullStars = '★'.repeat(rating);
-  const emptyStars = '☆'.repeat(5 - rating);
-  return fullStars + emptyStars;
-};
+const getStars = (rating) => "★".repeat(rating) + "☆".repeat(5 - rating);
 
 const UserCard = ({ user }) => {
   return (
@@ -14,15 +12,22 @@ const UserCard = ({ user }) => {
       <p className="text-sm text-gray-600 mb-1">Age: {user.age}</p>
       <p className="text-sm text-gray-600 mb-3">Department: {user.department}</p>
 
-      
       <div className="flex items-center mb-3">
         <span className="text-yellow-400 text-lg">{getStars(user.rating)}</span>
         <span className="ml-2 text-sm text-gray-500">({user.rating}.0)</span>
       </div>
 
-      
       <div className="flex justify-between space-x-2">
-        <button className="bg-blue-800 text-white px-3 py-1 rounded-full text-sm">View</button>
+        <Link
+          href={{
+            pathname: "/employee/view",
+            query: { user: JSON.stringify(user) },
+          }}
+        >
+          <button className="bg-blue-800 text-white px-3 py-1 rounded-full text-sm">
+            View
+          </button>
+        </Link>
         <button className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm">Bookmark</button>
         <button className="bg-green-600 text-white px-3 py-1 rounded-full text-sm">Promote</button>
       </div>

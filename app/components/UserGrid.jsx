@@ -22,7 +22,7 @@ const UserGrid = ({ users }) => {
 
     const matchesRating =
       filterRatings.length === 0 ||
-      filterRatings.map(Number).includes(user.rating); 
+      filterRatings.map(Number).includes(user.rating);
 
     return matchesSearch && matchesDepartment && matchesRating;
   });
