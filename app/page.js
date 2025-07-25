@@ -1,18 +1,26 @@
-import Image from "next/image";
-import UserCard from "./components/CardComponent";
+import UserGrid from "./components/UserGrid";
 
-export default function Home() {
-  const dummyUser = {
-    name: "Priyam Karn",
-    email: "priyam@example.com",
-    age: 24,
-    department: "Engineering",
-    rating: 4,
-  };
+const departments = ["Engineering", "Marketing", "Design", "Sales", "HR"];
+const getRandomRating = () => Math.floor(Math.random() * 5) + 1;
+const getRandomDepartment = () =>
+  departments[Math.floor(Math.random() * departments.length)];
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <UserCard user={dummyUser} />
-    </div>
-  );
+async function getUsers(count = 20) {
+  const res = await fetch(`https://randomuser.me/api/?results=${count}`, {
+    cache: "no-store",
+  });
+  const data = await res.json();
+
+  return data.results.map((u) => ({
+    name: `${u.name.first} ${u.name.last}`,
+    email: u.email,
+    age: u.dob.age,
+    department: getRandomDepartment(),
+    rating: getRandomRating(),
+  }));
+}
+
+export default async function Home() {
+  const users = await getUsers(20);
+  return <UserGrid users={users} />;
 }
