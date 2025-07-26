@@ -1,3 +1,4 @@
+import { AppProvider } from "./contexts/AppProvider";
 import UserGrid from "./components/UserGrid";
 
 const departments = ["Engineering", "Marketing", "Design", "Sales", "HR"];
@@ -11,7 +12,8 @@ async function getUsers(count = 20) {
   });
   const data = await res.json();
 
-  return data.results.map((u) => ({
+  return data.results.map((u, index) => ({
+    id: `user-${index}-${Date.now()}`,
     name: `${u.name.first} ${u.name.last}`,
     email: u.email,
     age: u.dob.age,
@@ -25,5 +27,10 @@ async function getUsers(count = 20) {
 
 export default async function Home() {
   const users = await getUsers(20);
-  return <UserGrid users={users} />;
+  
+  return (
+    <AppProvider initialUsers={users}>
+      <UserGrid />
+    </AppProvider>
+  );
 }

@@ -1,7 +1,17 @@
-// app/hooks/useBookmarks.js
-import { useEffect, useState } from "react";
+"use client";
+import { createContext, useContext, useEffect, useState } from "react";
 
-export default function useBookmarks() {
+const BookmarkContext = createContext();
+
+export const useBookmarks = () => {
+  const context = useContext(BookmarkContext);
+  if (!context) {
+    throw new Error("useBookmarks must be used within a BookmarkProvider");
+  }
+  return context;
+};
+
+export const BookmarkProvider = ({ children }) => {
   const [bookmarks, setBookmarks] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -11,7 +21,7 @@ export default function useBookmarks() {
       const stored = localStorage.getItem("bookmarkedEmployees");
       if (stored) {
         const parsedBookmarks = JSON.parse(stored);
-        console.log("Loaded bookmarks:", parsedBookmarks); // Debug log
+        console.log("Loaded bookmarks:", parsedBookmarks);
         setBookmarks(parsedBookmarks);
       }
     } catch (error) {
@@ -22,11 +32,11 @@ export default function useBookmarks() {
     }
   }, []);
 
-  // Save bookmarks to localStorage whenever bookmarks change (but not on initial load)
+  // Save bookmarks to localStorage whenever bookmarks change
   useEffect(() => {
     if (isLoaded) {
       try {
-        console.log("Saving bookmarks:", bookmarks); // Debug log
+        console.log("Saving bookmarks:", bookmarks);
         localStorage.setItem("bookmarkedEmployees", JSON.stringify(bookmarks));
       } catch (error) {
         console.error("Error saving bookmarks:", error);
@@ -40,14 +50,12 @@ export default function useBookmarks() {
       return;
     }
 
-    // Generate an ID if one doesn't exist
     const userWithId = {
       ...user,
       id: user.id || user.email || `${user.name}-${user.department}`.replace(/\s+/g, '-').toLowerCase()
     };
 
     setBookmarks((prev) => {
-      // Check if already bookmarked using the generated/existing ID
       if (prev.some((u) => u.id === userWithId.id)) {
         console.log("User already bookmarked:", userWithId.id);
         return prev;
@@ -73,7 +81,6 @@ export default function useBookmarks() {
   };
 
   const isBookmarked = (user) => {
-    // Handle both user objects and IDs
     const idToCheck = typeof user === 'object' ? 
       (user.id || user.email || `${user.name}-${user.department}`.replace(/\s+/g, '-').toLowerCase()) : 
       user;
@@ -81,11 +88,17 @@ export default function useBookmarks() {
     return bookmarks.some((u) => u.id === idToCheck);
   };
 
-  return { 
-    bookmarks, 
-    addBookmark, 
-    removeBookmark, 
+  const value = {
+    bookmarks,
+    addBookmark,
+    removeBookmark,
     isBookmarked,
-    isLoaded 
+    isLoaded
   };
-}
+
+  return (
+    <BookmarkContext.Provider value={value}>
+      {children}
+    </BookmarkContext.Provider>
+  );
+};

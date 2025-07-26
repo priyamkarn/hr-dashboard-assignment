@@ -1,4 +1,3 @@
-// components/UserCard.tsx
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
@@ -36,7 +35,6 @@ const UserCard = ({ user, onPromote }) => {
     setSelectedPosition("");
   };
 
-  // Sample positions - you can pass these as props or fetch from API
   const availablePositions = [
     "Senior Developer",
     "Team Lead",
