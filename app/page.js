@@ -1,5 +1,5 @@
 import { AppProvider } from "./contexts/AppProvider";
-import UserGrid from "./components/UserGrid";
+import AppContent from "./contexts/AppContent";
 
 const departments = ["Engineering", "Marketing", "Design", "Sales", "HR"];
 const getRandomRating = () => Math.floor(Math.random() * 5) + 1;
@@ -30,7 +30,7 @@ export default async function Home() {
   
   return (
     <AppProvider initialUsers={users}>
-      <UserGrid />
+      <AppContent />
     </AppProvider>
   );
 }
