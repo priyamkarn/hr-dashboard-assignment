@@ -2,7 +2,6 @@
 
 A modern HR dashboard built with [Next.js](https://nextjs.org), featuring real-time user data, filtering, analytics, and user interaction features like bookmarking and promotions.
 
-🌐 **Live Demo**: [https://your-vercel-url.vercel.app](https://your-vercel-url.vercel.app)
 
 ---
 
@@ -50,7 +49,6 @@ A modern HR dashboard built with [Next.js](https://nextjs.org), featuring real-t
 - ✅ Mock authentication (login screen)
 - ✅ “Create User” modal with form validation
 - ✅ Infinite scroll on dashboard using Intersection Observer
-- ✅ Dark mode toggle (context-driven)
 
 ---
 
