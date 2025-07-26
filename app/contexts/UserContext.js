@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 
 const UserContext = createContext();
 
@@ -11,10 +11,62 @@ export const useUsers = () => {
   return context;
 };
 
+const departments = ["Engineering", "Marketing", "Design", "Sales", "HR"];
+const getRandomRating = () => Math.floor(Math.random() * 5) + 1;
+const getRandomDepartment = () =>
+  departments[Math.floor(Math.random() * departments.length)];
+
+const generateUsers = async (count = 20, offset = 0) => {
+  try {
+    const res = await fetch(`https://randomuser.me/api/?results=${count}&seed=employee-app&page=${Math.floor(offset / count) + 1}`, {
+      cache: "no-store",
+    });
+    const data = await res.json();
+
+    return data.results.map((u, index) => ({
+      id: `user-${offset + index}-${Date.now()}-${Math.random()}`,
+      name: `${u.name.first} ${u.name.last}`,
+      email: u.email,
+      age: u.dob.age,
+      department: getRandomDepartment(),
+      rating: getRandomRating(),
+      phone: u.phone,
+      address: `${u.location.street.number}, ${u.location.city}`,
+      bio: "A passionate employee focused on delivering impactful results.",
+    }));
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
+};
+
 export const UserProvider = ({ children, initialUsers = [] }) => {
   const [users, setUsers] = useState(initialUsers);
   const [promotions, setPromotions] = useState([]);
   const [projectAssignments, setProjectAssignments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+
+  const loadMoreUsers = useCallback(async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+    try {
+      const newUsers = await generateUsers(20, users.length);
+      
+      if (newUsers.length === 0) {
+        setHasMore(false);
+      } else {
+        setUsers(prevUsers => [...prevUsers, ...newUsers]);
+        setPage(prevPage => prevPage + 1);
+      }
+    } catch (error) {
+      console.error("Error loading more users:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasMore, users.length]);
 
   const promoteUser = (userId, newPosition) => {
     const promotion = {
@@ -48,6 +100,12 @@ export const UserProvider = ({ children, initialUsers = [] }) => {
     return projectAssignments.filter(a => a.userId === userId);
   };
 
+  const resetUsers = () => {
+    setUsers(initialUsers);
+    setPage(1);
+    setHasMore(true);
+  };
+
   const value = {
     users,
     setUsers,
@@ -56,7 +114,11 @@ export const UserProvider = ({ children, initialUsers = [] }) => {
     promoteUser,
     assignUserToProject,
     getUserPromotions,
-    getUserAssignments
+    getUserAssignments,
+    loadMoreUsers,
+    loading,
+    hasMore,
+    resetUsers
   };
 
   return (
@@ -65,3 +127,4 @@ export const UserProvider = ({ children, initialUsers = [] }) => {
     </UserContext.Provider>
   );
 };
+
